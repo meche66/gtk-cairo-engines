@@ -5141,136 +5141,6 @@ range_new (guint start,
   return br;
 }
 
-static PangoLayout*
-get_insensitive_layout (GdkDrawable *drawable,
-			PangoLayout *layout)
-{
-  GSList *embossed_ranges = NULL;
-  GSList *stippled_ranges = NULL;
-  PangoLayoutIter *iter;
-  GSList *tmp_list = NULL;
-  PangoLayout *new_layout;
-  PangoAttrList *attrs;
-  GdkBitmap *stipple = NULL;
-  
-  iter = pango_layout_get_iter (layout);
-  
-  do
-    {
-      PangoLayoutRun *run;
-      PangoAttribute *attr;
-      gboolean need_stipple = FALSE;
-      ByteRange *br;
-      
-      run = pango_layout_iter_get_run_readonly (iter);
-
-      if (run)
-        {
-          tmp_list = run->item->analysis.extra_attrs;
-
-          while (tmp_list != NULL)
-            {
-              attr = tmp_list->data;
-              switch (attr->klass->type)
-                {
-                case PANGO_ATTR_FOREGROUND:
-                case PANGO_ATTR_BACKGROUND:
-                  need_stipple = TRUE;
-                  break;
-              
-                default:
-                  break;
-                }
-
-              if (need_stipple)
-                break;
-          
-              tmp_list = g_slist_next (tmp_list);
-            }
-
-          br = range_new (run->item->offset, run->item->offset + run->item->length);
-      
-          if (need_stipple)
-            stippled_ranges = g_slist_prepend (stippled_ranges, br);
-          else
-            embossed_ranges = g_slist_prepend (embossed_ranges, br);
-        }
-    }
-  while (pango_layout_iter_next_run (iter));
-
-  pango_layout_iter_free (iter);
-
-  new_layout = pango_layout_copy (layout);
-
-  attrs = pango_layout_get_attributes (new_layout);
-
-  if (attrs == NULL)
-    {
-      /* Create attr list if there wasn't one */
-      attrs = pango_attr_list_new ();
-      pango_layout_set_attributes (new_layout, attrs);
-      pango_attr_list_unref (attrs);
-    }
-  
-  tmp_list = embossed_ranges;
-  while (tmp_list != NULL)
-    {
-      PangoAttribute *attr;
-      ByteRange *br = tmp_list->data;
-
-      attr = gdk_pango_attr_embossed_new (TRUE);
-
-      attr->start_index = br->start;
-      attr->end_index = br->end;
-      
-      pango_attr_list_change (attrs, attr);
-
-      g_free (br);
-      
-      tmp_list = g_slist_next (tmp_list);
-    }
-
-  g_slist_free (embossed_ranges);
-  
-  tmp_list = stippled_ranges;
-  while (tmp_list != NULL)
-    {
-      PangoAttribute *attr;
-      ByteRange *br = tmp_list->data;
-
-      if (stipple == NULL)
-        {
-#define gray50_width 2
-#define gray50_height 2
-          static const char gray50_bits[] = {
-            0x02, 0x01
-          };
-
-          stipple = gdk_bitmap_create_from_data (drawable,
-                                                 gray50_bits, gray50_width,
-                                                 gray50_height);
-        }
-      
-      attr = gdk_pango_attr_stipple_new (stipple);
-
-      attr->start_index = br->start;
-      attr->end_index = br->end;
-      
-      pango_attr_list_change (attrs, attr);
-
-      g_free (br);
-      
-      tmp_list = g_slist_next (tmp_list);
-    }
-
-  g_slist_free (stippled_ranges);
-  
-  if (stipple)
-    g_object_unref (stipple);
-
-  return new_layout;
-}
-
 static void
 gtk_default_draw_layout (GtkStyle        *style,
                          GdkWindow       *window,
@@ -5283,30 +5153,34 @@ gtk_default_draw_layout (GtkStyle        *style,
                          gint             y,
                          PangoLayout     *layout)
 {
-  GdkGC *gc;
+  cairo_t *cr;
+  GdkColor *gc;
 
-  gc = use_text ? style->text_gc[state_type] : style->fg_gc[state_type];
-  
+  cr = gdk_cairo_create (window);
+
   if (area)
-    gdk_gc_set_clip_rectangle (gc, area);
+    {
+      gdk_cairo_rectangle (cr, area);
+      cairo_clip (cr);
+    }
 
   if (state_type == GTK_STATE_INSENSITIVE)
     {
-      PangoLayout *ins;
-
-      ins = get_insensitive_layout (window, layout);
-      
-      gdk_draw_layout (window, gc, x, y, ins);
-
-      g_object_unref (ins);
-    }
-  else
-    {
-      gdk_draw_layout (window, gc, x, y, layout);
+      gdk_cairo_set_source_color (cr, &style->white);
+      cairo_move_to (cr, x + 1, y + 1);
+      pango_cairo_layout_path (cr, layout);
+      cairo_fill (cr);
     }
 
-  if (area)
-    gdk_gc_set_clip_rectangle (gc, NULL);
+  gc = use_text ? &style->text[state_type] : &style->fg[state_type];
+
+  cairo_move_to (cr, x, y);
+  gdk_cairo_set_source_color (cr, gc);
+
+  pango_cairo_layout_path (cr, layout);
+  cairo_fill (cr);
+
+  cairo_destroy (cr);
 }
 
 static void

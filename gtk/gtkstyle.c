@@ -3527,21 +3527,26 @@ gtk_default_draw_box (GtkStyle      *style,
   if (!style->bg_pixmap[state_type] || 
       GDK_IS_PIXMAP (window))
     {
-      GdkGC *gc = style->bg_gc[state_type];
-      
+      cairo_t *cr;
+      GdkColor *gc = &style->bg[state_type];
+
+      cr = gdk_cairo_create (window);
+
       if (state_type == GTK_STATE_SELECTED && detail && strcmp (detail, "paned") == 0)
 	{
 	  if (widget && !GTK_WIDGET_HAS_FOCUS (widget))
-	    gc = style->base_gc[GTK_STATE_ACTIVE];
+	    gc = &style->base[GTK_STATE_ACTIVE];
 	}
 
       if (area)
-	gdk_gc_set_clip_rectangle (gc, area);
+        {
+          gdk_cairo_rectangle (cr, area);
+          cairo_clip (cr);
+        }
 
-      gdk_draw_rectangle (window, gc, TRUE,
-                          x, y, width, height);
-      if (area)
-	gdk_gc_set_clip_rectangle (gc, NULL);
+      _cairo_draw_rectangle (cr, gc, TRUE,
+                             x, y, width, height);
+      cairo_destroy (cr);
     }
   else
     gtk_style_apply_default_background (style, window,
@@ -3550,29 +3555,28 @@ gtk_default_draw_box (GtkStyle      *style,
 
   if (is_spinbutton_box)
     {
-      GdkGC *upper_gc;
-      GdkGC *lower_gc;
-      
-      lower_gc = style->dark_gc[state_type];
+      cairo_t *cr;
+      GdkColor *upper_gc;
+      GdkColor *lower_gc;
+
+      cr = gdk_cairo_create (window);
+
+      lower_gc = &style->dark[state_type];
       if (shadow_type == GTK_SHADOW_OUT)
-	upper_gc = style->light_gc[state_type];
+	upper_gc = &style->light[state_type];
       else
-	upper_gc = style->dark_gc[state_type];
+	upper_gc = &style->dark[state_type];
 
       if (area)
 	{
-	  gdk_gc_set_clip_rectangle (style->dark_gc[state_type], area);
-	  gdk_gc_set_clip_rectangle (style->light_gc[state_type], area);
+          gdk_cairo_rectangle (cr, area);
+          cairo_clip (cr);
 	}
       
-      gdk_draw_line (window, upper_gc, x, y, x + width - 1, y);
-      gdk_draw_line (window, lower_gc, x, y + height - 1, x + width - 1, y + height - 1);
+      _cairo_draw_line (cr, upper_gc, x, y, x + width - 1, y);
+      _cairo_draw_line (cr, lower_gc, x, y + height - 1, x + width - 1, y + height - 1);
 
-      if (area)
-	{
-	  gdk_gc_set_clip_rectangle (style->dark_gc[state_type], NULL);
-	  gdk_gc_set_clip_rectangle (style->light_gc[state_type], NULL);
-	}
+      cairo_destroy (cr);
       return;
     }
 

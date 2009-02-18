@@ -2380,10 +2380,16 @@ _cairo_draw_line (cairo_t  *cr,
                   gint      x2,
                   gint      y2)
 {
+  cairo_save (cr);
+
   gdk_cairo_set_source_color (cr, color);
+  cairo_set_line_cap (cr, CAIRO_LINE_CAP_SQUARE);
+
   cairo_move_to (cr, x1 + 0.5, y1 + 0.5);
   cairo_line_to (cr, x2 + 0.5, y2 + 0.5);
   cairo_stroke (cr);
+
+  cairo_restore (cr);
 }
 
 static void

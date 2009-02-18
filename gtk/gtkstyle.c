@@ -3606,17 +3606,13 @@ gtk_default_draw_box (GtkStyle      *style,
     }
 }
 
-static GdkGC *
-get_darkened_gc (GdkWindow      *window,
-                 const GdkColor *color,
+static GdkColor *
+get_darkened (const GdkColor *color,
                  gint            darken_count)
 {
   GdkColor src = *color;
   GdkColor shaded = *color;
-  GdkGC *gc;
   
-  gc = gdk_gc_new (window);
-
   while (darken_count)
     {
       _gtk_style_shade (&src, &shaded, 0.93);
@@ -3624,9 +3620,7 @@ get_darkened_gc (GdkWindow      *window,
       --darken_count;
     }
    
-  gdk_gc_set_rgb_fg_color (gc, &shaded);
-
-  return gc;
+  return gdk_color_copy (&shaded);
 }
 
 static void 
@@ -3642,8 +3636,8 @@ gtk_default_draw_flat_box (GtkStyle      *style,
                            gint           width,
                            gint           height)
 {
-  GdkGC *gc1;
-  GdkGC *freeme = NULL;
+  GdkColor *gc1;
+  GdkColor *freeme = NULL;
   
   sanitize_size (window, &width, &height);
   
@@ -3652,7 +3646,7 @@ gtk_default_draw_flat_box (GtkStyle      *style,
       if (state_type == GTK_STATE_SELECTED)
         {
           if (!strcmp ("text", detail))
-            gc1 = style->bg_gc[GTK_STATE_SELECTED];
+            gc1 = &style->bg[GTK_STATE_SELECTED];
           else if (!strcmp ("cell_even", detail) ||
                    !strcmp ("cell_odd", detail) ||
                    !strcmp ("cell_even_ruled", detail) ||
@@ -3660,30 +3654,30 @@ gtk_default_draw_flat_box (GtkStyle      *style,
             {
 	      /* This has to be really broken; alex made me do it. -jrb */
 	      if (widget && GTK_WIDGET_HAS_FOCUS (widget))
-		gc1 = style->base_gc[state_type];
+		gc1 = &style->base[state_type];
 	      else
-	        gc1 = style->base_gc[GTK_STATE_ACTIVE];
+	        gc1 = &style->base[GTK_STATE_ACTIVE];
             }
 	  else if (!strcmp ("cell_odd_ruled", detail) ||
 		   !strcmp ("cell_odd_ruled_sorted", detail))
 	    {
 	      if (widget && GTK_WIDGET_HAS_FOCUS (widget))
-	        freeme = get_darkened_gc (window, &style->base[state_type], 1);
+	        freeme = get_darkened (&style->base[state_type], 1);
 	      else
-	        freeme = get_darkened_gc (window, &style->base[GTK_STATE_ACTIVE], 1);
+	        freeme = get_darkened (&style->base[GTK_STATE_ACTIVE], 1);
 	      gc1 = freeme;
 	    }
           else
             {
-              gc1 = style->bg_gc[state_type];
+              gc1 = &style->bg[state_type];
             }
         }
       else
         {
           if (!strcmp ("viewportbin", detail))
-            gc1 = style->bg_gc[GTK_STATE_NORMAL];
+            gc1 = &style->bg[GTK_STATE_NORMAL];
           else if (!strcmp ("entry_bg", detail))
-            gc1 = style->base_gc[state_type];
+            gc1 = &style->base[state_type];
 
           /* For trees: even rows are base color, odd rows are a shade of
            * the base color, the sort column is a shade of the original color
@@ -3702,13 +3696,13 @@ gtk_default_draw_flat_box (GtkStyle      *style,
 
 	      if (color)
 	        {
-		  freeme = get_darkened_gc (window, color, 0);
+		  freeme = get_darkened (color, 0);
 		  gc1 = freeme;
 
 		  gdk_color_free (color);
 		}
 	      else
-	        gc1 = style->base_gc[state_type];
+	        gc1 = &style->base[state_type];
             }
 	  else if (!strcmp ("cell_odd_ruled", detail))
 	    {
@@ -3720,7 +3714,7 @@ gtk_default_draw_flat_box (GtkStyle      *style,
 
 	      if (color)
 	        {
-		  freeme = get_darkened_gc (window, color, 0);
+		  freeme = get_darkened (color, 0);
 		  gc1 = freeme;
 
 		  gdk_color_free (color);
@@ -3733,11 +3727,11 @@ gtk_default_draw_flat_box (GtkStyle      *style,
 
 		  if (color)
 		    {
-		      freeme = get_darkened_gc (window, color, 1);
+		      freeme = get_darkened (color, 1);
 		      gdk_color_free (color);
 		    }
 		  else
-		    freeme = get_darkened_gc (window, &style->base[state_type], 1);
+		    freeme = get_darkened (&style->base[state_type], 1);
 		  gc1 = freeme;
 		}
 	    }
@@ -3758,14 +3752,14 @@ gtk_default_draw_flat_box (GtkStyle      *style,
 
 	      if (color)
 	        {
-		  freeme = get_darkened_gc (window, color, 1);
+		  freeme = get_darkened (color, 1);
 		  gc1 = freeme;
 
 		  gdk_color_free (color);
 		}
 	      else
 		{
-	          freeme = get_darkened_gc (window, &style->base[state_type], 1);
+	          freeme = get_darkened (&style->base[state_type], 1);
                   gc1 = freeme;
 		}
             }
@@ -3779,7 +3773,7 @@ gtk_default_draw_flat_box (GtkStyle      *style,
 
 	      if (color)
 	        {
-		  freeme = get_darkened_gc (window, color, 1);
+		  freeme = get_darkened (color, 1);
 		  gc1 = freeme;
 
 		  gdk_color_free (color);
@@ -3792,36 +3786,42 @@ gtk_default_draw_flat_box (GtkStyle      *style,
 
 		  if (color)
 		    {
-		      freeme = get_darkened_gc (window, color, 2);
+		      freeme = get_darkened (color, 2);
 		      gdk_color_free (color);
 		    }
 		  else
-                    freeme = get_darkened_gc (window, &style->base[state_type], 2);
+                    freeme = get_darkened (&style->base[state_type], 2);
                   gc1 = freeme;
 	        }
             }
           else
-            gc1 = style->bg_gc[state_type];
+            gc1 = &style->bg[state_type];
         }
     }
   else
-    gc1 = style->bg_gc[state_type];
+    gc1 = &style->bg[state_type];
   
-  if (!style->bg_pixmap[state_type] || gc1 != style->bg_gc[state_type] ||
+  if (!style->bg_pixmap[state_type] || gc1 != &style->bg[state_type] ||
       GDK_IS_PIXMAP (window))
     {
-      if (area)
-	gdk_gc_set_clip_rectangle (gc1, area);
+      cairo_t *cr;
 
-      gdk_draw_rectangle (window, gc1, TRUE,
-                          x, y, width, height);
+      cr = gdk_cairo_create (window);
+
+      if (area)
+        {
+          gdk_cairo_rectangle (cr, area);
+          cairo_clip (cr);
+        }
+
+      _cairo_draw_rectangle (cr, gc1, TRUE,
+                             x, y, width, height);
 
       if (detail && !strcmp ("tooltip", detail))
-        gdk_draw_rectangle (window, style->black_gc, FALSE,
-                            x, y, width - 1, height - 1);
+        _cairo_draw_rectangle (cr, &style->black, FALSE,
+                               x, y, width - 1, height - 1);
 
-      if (area)
-	gdk_gc_set_clip_rectangle (gc1, NULL);
+      cairo_destroy (cr);
     }
   else
     gtk_style_apply_default_background (style, window,
@@ -3830,7 +3830,7 @@ gtk_default_draw_flat_box (GtkStyle      *style,
 
 
   if (freeme)
-    g_object_unref (freeme);
+    gdk_color_free (freeme);
 }
 
 static void 

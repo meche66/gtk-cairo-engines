@@ -3133,23 +3133,16 @@ gtk_default_draw_polygon (GtkStyle      *style,
 }
 
 static void
-draw_arrow (GdkWindow     *window,
+draw_arrow (cairo_t       *cr,
 	    GdkColor      *color,
-	    GdkRectangle  *area,
 	    GtkArrowType   arrow_type,
 	    gint           x,
 	    gint           y,
 	    gint           width,
 	    gint           height)
 {
-  cairo_t *cr = gdk_cairo_create (window);
   gdk_cairo_set_source_color (cr, color);
-  
-  if (area)
-    {
-      gdk_cairo_rectangle (cr, area);
-      cairo_clip (cr);
-    }
+  cairo_save (cr);
     
   if (arrow_type == GTK_ARROW_DOWN)
     {
@@ -3179,7 +3172,7 @@ draw_arrow (GdkWindow     *window,
   cairo_close_path (cr);
   cairo_fill (cr);
 
-  cairo_destroy (cr);
+  cairo_restore (cr);
 }
 
 static void
@@ -3266,6 +3259,8 @@ gtk_default_draw_arrow (GtkStyle      *style,
 			gint           width,
 			gint           height)
 {
+  cairo_t *cr;
+
   sanitize_size (window, &width, &height);
 
   calculate_arrow_geometry (arrow_type, &x, &y, &width, &height);
@@ -3273,11 +3268,21 @@ gtk_default_draw_arrow (GtkStyle      *style,
   if (detail && strcmp (detail, "menu_scroll_arrow_up") == 0)
     y++;
 
+  cr = gdk_cairo_create (window);
+
+  if (area)
+    {
+      gdk_cairo_rectangle (cr, area);
+      cairo_clip (cr);
+    }
+
   if (state == GTK_STATE_INSENSITIVE)
-    draw_arrow (window, &style->white, area, arrow_type,
+    draw_arrow (cr, &style->white, arrow_type,
 		x + 1, y + 1, width, height);
-  draw_arrow (window, &style->fg[state], area, arrow_type,
+  draw_arrow (cr, &style->fg[state], arrow_type,
 	      x, y, width, height);
+
+  cairo_destroy (cr);
 }
 
 static void
@@ -4093,10 +4098,19 @@ gtk_default_draw_tab (GtkStyle      *style,
 {
 #define ARROW_SPACE 4
 
+  cairo_t *cr;
   GtkRequisition indicator_size;
   GtkBorder indicator_spacing;
   gint arrow_height;
-  
+
+  cr = gdk_cairo_create (window);
+
+  if (area)
+    {
+      gdk_cairo_rectangle (cr, area);
+      cairo_clip (cr);
+    }
+
   option_menu_get_props (widget, &indicator_size, &indicator_spacing);
 
   indicator_size.width += (indicator_size.width % 2) - 1;
@@ -4107,23 +4121,25 @@ gtk_default_draw_tab (GtkStyle      *style,
 
   if (state_type == GTK_STATE_INSENSITIVE)
     {
-      draw_arrow (window, &style->white, area,
+      draw_arrow (cr, &style->white,
 		  GTK_ARROW_UP, x + 1, y + 1,
 		  indicator_size.width, arrow_height);
       
-      draw_arrow (window, &style->white, area,
+      draw_arrow (cr, &style->white,
 		  GTK_ARROW_DOWN, x + 1, y + arrow_height + ARROW_SPACE + 1,
 		  indicator_size.width, arrow_height);
     }
   
-  draw_arrow (window, &style->fg[state_type], area,
+  draw_arrow (cr, &style->fg[state_type],
 	      GTK_ARROW_UP, x, y,
 	      indicator_size.width, arrow_height);
   
   
-  draw_arrow (window, &style->fg[state_type], area,
+  draw_arrow (cr, &style->fg[state_type],
 	      GTK_ARROW_DOWN, x, y + arrow_height + ARROW_SPACE,
 	      indicator_size.width, arrow_height);
+
+  cairo_destroy (cr);
 }
 
 static void 

@@ -5097,26 +5097,6 @@ gtk_default_draw_expander (GtkStyle        *style,
   cairo_destroy (cr);
 }
 
-typedef struct _ByteRange ByteRange;
-
-struct _ByteRange
-{
-  guint start;
-  guint end;
-};
-
-static ByteRange*
-range_new (guint start,
-           guint end)
-{
-  ByteRange *br = g_new (ByteRange, 1);
-
-  br->start = start;
-  br->end = end;
-  
-  return br;
-}
-
 static void
 gtk_default_draw_layout (GtkStyle        *style,
                          GdkWindow       *window,

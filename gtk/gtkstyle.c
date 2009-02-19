@@ -5172,16 +5172,20 @@ gtk_default_draw_resize_grip (GtkStyle       *style,
                               gint            width,
                               gint            height)
 {
-  GdkPoint points[4];
-  gint i, j, skip;
+  gint skip;
+  cairo_t *cr;
 
+  cr = gdk_cairo_create (window);
+  cairo_rectangle (cr, x, y, width, height);
+  cairo_clip (cr);
   if (area)
     {
-      gdk_gc_set_clip_rectangle (style->light_gc[state_type], area);
-      gdk_gc_set_clip_rectangle (style->dark_gc[state_type], area);
-      gdk_gc_set_clip_rectangle (style->bg_gc[state_type], area);
+      gdk_cairo_rectangle (cr, area);
+      cairo_clip (cr);
     }
-  
+
+  cairo_set_line_width (cr, 1.0);
+
   skip = -1;
   switch (edge)
     {
@@ -5256,20 +5260,6 @@ gtk_default_draw_resize_grip (GtkStyle       *style,
     default:
       g_assert_not_reached ();
     }
-  /* Clear background */
-  j = 0;
-  for (i = 0; i < 4; i++)
-    {
-      if (skip != i)
-	{
-	  points[j].x = (i == 0 || i == 3) ? x : x + width;
-	  points[j].y = (i < 2) ? y : y + height;
-	  j++;
-	}
-    }
-  
-  gdk_draw_polygon (window, style->bg_gc[state_type], TRUE, 
-		    points, skip < 0 ? 4 : 3);
   
   switch (edge)
     {
@@ -5282,16 +5272,16 @@ gtk_default_draw_resize_grip (GtkStyle       *style,
 
 	while (xi < x + width)
 	  {
-	    gdk_draw_line (window,
-			   style->light_gc[state_type],
-			   xi, y,
-			   xi, y + height);
+	    _cairo_draw_line (cr,
+			      &style->light[state_type],
+			      xi, y,
+			      xi, y + height);
 
 	    xi++;
-	    gdk_draw_line (window,
-			   style->dark_gc[state_type],
-			   xi, y,
-			   xi, y + height);
+	    _cairo_draw_line (cr,
+			      &style->dark[state_type],
+			      xi, y,
+			      xi, y + height);
 
 	    xi += 2;
 	  }
@@ -5306,16 +5296,16 @@ gtk_default_draw_resize_grip (GtkStyle       *style,
 
 	while (yi < y + height)
 	  {
-	    gdk_draw_line (window,
-			   style->light_gc[state_type],
-			   x, yi,
-			   x + width, yi);
+	    _cairo_draw_line (cr,
+			      &style->light[state_type],
+			      x, yi,
+			      x + width, yi);
 
 	    yi++;
-	    gdk_draw_line (window,
-			   style->dark_gc[state_type],
-			   x, yi,
-			   x + width, yi);
+	    _cairo_draw_line (cr,
+			      &style->dark[state_type],
+			      x, yi,
+			      x + width, yi);
 
 	    yi+= 2;
 	  }
@@ -5330,26 +5320,26 @@ gtk_default_draw_resize_grip (GtkStyle       *style,
 
 	while (xi > x + 3)
 	  {
-	    gdk_draw_line (window,
-			   style->dark_gc[state_type],
-			   xi, y,
-			   x, yi);
+	    _cairo_draw_line (cr,
+			      &style->dark[state_type],
+			      xi, y,
+			      x, yi);
 
 	    --xi;
 	    --yi;
 
-	    gdk_draw_line (window,
-			   style->dark_gc[state_type],
-			   xi, y,
-			   x, yi);
+	    _cairo_draw_line (cr,
+			      &style->dark[state_type],
+			      xi, y,
+			      x, yi);
 
 	    --xi;
 	    --yi;
 
-	    gdk_draw_line (window,
-			   style->light_gc[state_type],
-			   xi, y,
-			   x, yi);
+	    _cairo_draw_line (cr,
+			      &style->light[state_type],
+			      xi, y,
+			      x, yi);
 
 	    xi -= 3;
 	    yi -= 3;
@@ -5366,26 +5356,26 @@ gtk_default_draw_resize_grip (GtkStyle       *style,
 
         while (xi < (x + width - 3))
           {
-            gdk_draw_line (window,
-                           style->light_gc[state_type],
-                           xi, y,
-                           x + width, yi);                           
+            _cairo_draw_line (cr,
+                              &style->light[state_type],
+                              xi, y,
+                              x + width, yi);                           
 
             ++xi;
             --yi;
             
-            gdk_draw_line (window,
-                           style->dark_gc[state_type],
-                           xi, y,
-                           x + width, yi);                           
+            _cairo_draw_line (cr,
+                              &style->dark[state_type],
+                              xi, y,
+                              x + width, yi);                           
 
             ++xi;
             --yi;
             
-            gdk_draw_line (window,
-                           style->dark_gc[state_type],
-                           xi, y,
-                           x + width, yi);
+            _cairo_draw_line (cr,
+                              &style->dark[state_type],
+                              xi, y,
+                              x + width, yi);
 
             xi += 3;
             yi -= 3;
@@ -5401,26 +5391,26 @@ gtk_default_draw_resize_grip (GtkStyle       *style,
 
 	while (xi > x + 3)
 	  {
-	    gdk_draw_line (window,
-			   style->dark_gc[state_type],
-			   x, yi,
-			   xi, y + height);
+	    _cairo_draw_line (cr,
+			      &style->dark[state_type],
+			      x, yi,
+			      xi, y + height);
 
 	    --xi;
 	    ++yi;
 
-	    gdk_draw_line (window,
-			   style->dark_gc[state_type],
-			   x, yi,
-			   xi, y + height);
+	    _cairo_draw_line (cr,
+			      &style->dark[state_type],
+			      x, yi,
+			      xi, y + height);
 
 	    --xi;
 	    ++yi;
 
-	    gdk_draw_line (window,
-			   style->light_gc[state_type],
-			   x, yi,
-			   xi, y + height);
+	    _cairo_draw_line (cr,
+			      &style->light[state_type],
+			      x, yi,
+			      xi, y + height);
 
 	    xi -= 3;
 	    yi += 3;
@@ -5437,26 +5427,26 @@ gtk_default_draw_resize_grip (GtkStyle       *style,
 
         while (xi < (x + width - 3))
           {
-            gdk_draw_line (window,
-                           style->light_gc[state_type],
-                           xi, y + height,
-                           x + width, yi);                           
+            _cairo_draw_line (cr,
+                              &style->light[state_type],
+                              xi, y + height,
+                              x + width, yi);                           
 
             ++xi;
             ++yi;
             
-            gdk_draw_line (window,
-                           style->dark_gc[state_type],
-                           xi, y + height,
-                           x + width, yi);                           
+            _cairo_draw_line (cr,
+                              &style->dark[state_type],
+                              xi, y + height,
+                              x + width, yi);                           
 
             ++xi;
             ++yi;
             
-            gdk_draw_line (window,
-                           style->dark_gc[state_type],
-                           xi, y + height,
-                           x + width, yi);
+            _cairo_draw_line (cr,
+                              &style->dark[state_type],
+                              xi, y + height,
+                              x + width, yi);
 
             xi += 3;
             yi += 3;
@@ -5468,12 +5458,7 @@ gtk_default_draw_resize_grip (GtkStyle       *style,
       break;
     }
   
-  if (area)
-    {
-      gdk_gc_set_clip_rectangle (style->light_gc[state_type], NULL);
-      gdk_gc_set_clip_rectangle (style->dark_gc[state_type], NULL);
-      gdk_gc_set_clip_rectangle (style->bg_gc[state_type], NULL);
-    }
+  cairo_destroy (cr);
 }
 
 void

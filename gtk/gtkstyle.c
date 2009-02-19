@@ -4858,28 +4858,28 @@ gtk_default_draw_slider (GtkStyle      *style,
 }
 
 static void
-draw_dot (GdkWindow    *window,
-	  GdkGC        *light_gc,
-	  GdkGC        *dark_gc,
-	  gint          x,
-	  gint          y,
-	  gushort       size)
+draw_dot (cairo_t    *cr,
+	  GdkColor   *light,
+	  GdkColor   *dark,
+	  gint        x,
+	  gint        y,
+	  gushort     size)
 {
   size = CLAMP (size, 2, 3);
 
   if (size == 2)
     {
-      gdk_draw_point (window, light_gc, x, y);
-      gdk_draw_point (window, light_gc, x+1, y+1);
+      _cairo_draw_point (cr, light, x, y);
+      _cairo_draw_point (cr, light, x+1, y+1);
     }
   else if (size == 3)
     {
-      gdk_draw_point (window, light_gc, x, y);
-      gdk_draw_point (window, light_gc, x+1, y);
-      gdk_draw_point (window, light_gc, x, y+1);
-      gdk_draw_point (window, dark_gc, x+1, y+2);
-      gdk_draw_point (window, dark_gc, x+2, y+1);
-      gdk_draw_point (window, dark_gc, x+2, y+2);
+      _cairo_draw_point (cr, light, x, y);
+      _cairo_draw_point (cr, light, x+1, y);
+      _cairo_draw_point (cr, light, x, y+1);
+      _cairo_draw_point (cr, dark, x+1, y+2);
+      _cairo_draw_point (cr, dark, x+2, y+1);
+      _cairo_draw_point (cr, dark, x+2, y+2);
     }
 }
 
@@ -4899,17 +4899,20 @@ gtk_default_draw_handle (GtkStyle      *style,
 {
   gint xx, yy;
   gint xthick, ythick;
-  GdkGC *light_gc, *dark_gc;
-  GdkGC *free_me = NULL;
-  GdkRectangle rect;
-  GdkRectangle dest;
-  gint intersect;
+  GdkColor light, dark;
+  cairo_t *cr;
   
   sanitize_size (window, &width, &height);
   
   gtk_paint_box (style, window, state_type, shadow_type, area, widget, 
                  detail, x, y, width, height);
   
+  cr = gdk_cairo_create (window);
+  if (area)
+    {
+      gdk_cairo_rectangle (cr, area);
+      cairo_clip (cr);
+    }
   
   if (detail && !strcmp (detail, "paned"))
     {
@@ -4918,73 +4921,46 @@ gtk_default_draw_handle (GtkStyle      *style,
       ythick = 0;
 
       if (state_type == GTK_STATE_SELECTED && widget && !GTK_WIDGET_HAS_FOCUS (widget))
-	{
-	  GdkColor unfocused_light;
-
-	  _gtk_style_shade (&style->base[GTK_STATE_ACTIVE], &unfocused_light,
+	  _gtk_style_shade (&style->base[GTK_STATE_ACTIVE], &light,
                             LIGHTNESS_MULT);
-
-	  light_gc = free_me = gdk_gc_new (window);
-	  gdk_gc_set_rgb_fg_color (light_gc, &unfocused_light);
-	}
       else
-	light_gc = style->light_gc[state_type];
+	light = style->light[state_type];
 
-      dark_gc = style->black_gc;
+      dark = style->black;
     }
   else
     {
       xthick = style->xthickness;
       ythick = style->ythickness;
 
-      light_gc = style->light_gc[state_type];
-      dark_gc = style->dark_gc[state_type];
+      light = style->light[state_type];
+      dark = style->dark[state_type];
     }
   
-  rect.x = x + xthick;
-  rect.y = y + ythick;
-  rect.width = width - (xthick * 2);
-  rect.height = height - (ythick * 2);
-
-  if (area)
-    intersect = gdk_rectangle_intersect (area, &rect, &dest);
-  else
-    {
-      intersect = TRUE;
-      dest = rect;
-    }
-
-  if (!intersect)
-    goto out;
-
-  gdk_gc_set_clip_rectangle (light_gc, &dest);
-  gdk_gc_set_clip_rectangle (dark_gc, &dest);
+  cairo_rectangle(cr, x + xthick, y + ythick,
+                  width - (xthick * 2), height - (ythick * 2));
+  cairo_clip (cr);
 
   if (detail && !strcmp (detail, "paned"))
     {
       if (orientation == GTK_ORIENTATION_HORIZONTAL)
 	for (xx = x + width/2 - 15; xx <= x + width/2 + 15; xx += 5)
-	  draw_dot (window, light_gc, dark_gc, xx, y + height/2 - 1, 3);
+	  draw_dot (cr, &light, &dark, xx, y + height/2 - 1, 3);
       else
 	for (yy = y + height/2 - 15; yy <= y + height/2 + 15; yy += 5)
-	  draw_dot (window, light_gc, dark_gc, x + width/2 - 1, yy, 3);
+	  draw_dot (cr, &light, &dark, x + width/2 - 1, yy, 3);
     }
   else
     {
       for (yy = y + ythick; yy < (y + height - ythick); yy += 3)
 	for (xx = x + xthick; xx < (x + width - xthick); xx += 6)
 	  {
-	    draw_dot (window, light_gc, dark_gc, xx, yy, 2);
-	    draw_dot (window, light_gc, dark_gc, xx + 3, yy + 1, 2);
+	    draw_dot (cr, &light, &dark, xx, yy, 2);
+	    draw_dot (cr, &light, &dark, xx + 3, yy + 1, 2);
 	  }
     }
 
-  gdk_gc_set_clip_rectangle (light_gc, NULL);
-  gdk_gc_set_clip_rectangle (dark_gc, NULL);
-
- out:
-  if (free_me)
-    g_object_unref (free_me);
+  cairo_destroy (cr);
 }
 
 static void

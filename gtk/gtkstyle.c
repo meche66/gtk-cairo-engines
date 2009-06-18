@@ -5140,17 +5140,14 @@ gtk_default_draw_layout (GtkStyle        *style,
     {
       gdk_cairo_set_source_color (cr, &style->white);
       cairo_move_to (cr, x + 1, y + 1);
-      pango_cairo_layout_path (cr, layout);
-      cairo_fill (cr);
+      pango_cairo_show_layout (cr, layout);
     }
 
   gc = use_text ? &style->text[state_type] : &style->fg[state_type];
 
-  cairo_move_to (cr, x, y);
   gdk_cairo_set_source_color (cr, gc);
-
-  pango_cairo_layout_path (cr, layout);
-  cairo_fill (cr);
+  cairo_move_to (cr, x, y);
+  pango_cairo_show_layout (cr, layout);
 
   cairo_destroy (cr);
 }

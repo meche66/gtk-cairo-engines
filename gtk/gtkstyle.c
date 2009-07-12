@@ -960,8 +960,8 @@ gtk_draw_hline (GtkStyle     *style,
 {
   g_return_if_fail (GTK_IS_STYLE (style));
   g_return_if_fail (GTK_STYLE_GET_CLASS (style)->draw_hline != NULL);
-  
-  GTK_STYLE_GET_CLASS (style)->draw_hline (style, window, state_type, NULL, NULL, NULL, x1, x2, y);
+
+  g_warning ("%s has been deprecated and is no longer implemented.", __FUNCTION__);
 }
 
 
@@ -989,8 +989,8 @@ gtk_draw_vline (GtkStyle     *style,
 {
   g_return_if_fail (GTK_IS_STYLE (style));
   g_return_if_fail (GTK_STYLE_GET_CLASS (style)->draw_vline != NULL);
-  
-  GTK_STYLE_GET_CLASS (style)->draw_vline (style, window, state_type, NULL, NULL, NULL, y1_, y2_, x);
+
+  g_warning ("%s has been deprecated and is no longer implemented.", __FUNCTION__);
 }
 
 /**
@@ -1021,8 +1021,8 @@ gtk_draw_shadow (GtkStyle      *style,
 {
   g_return_if_fail (GTK_IS_STYLE (style));
   g_return_if_fail (GTK_STYLE_GET_CLASS (style)->draw_shadow != NULL);
-  
-  GTK_STYLE_GET_CLASS (style)->draw_shadow (style, window, state_type, shadow_type, NULL, NULL, NULL, x, y, width, height);
+
+  g_warning ("%s has been deprecated and is no longer implemented.", __FUNCTION__);
 }
 
 /**
@@ -1050,8 +1050,8 @@ gtk_draw_polygon (GtkStyle      *style,
 {
   g_return_if_fail (GTK_IS_STYLE (style));
   g_return_if_fail (GTK_STYLE_GET_CLASS (style)->draw_polygon != NULL);
-  
-  GTK_STYLE_GET_CLASS (style)->draw_polygon (style, window, state_type, shadow_type, NULL, NULL, NULL, points, npoints, fill);
+
+  g_warning ("%s has been deprecated and is no longer implemented.", __FUNCTION__);
 }
 
 /**
@@ -1086,8 +1086,8 @@ gtk_draw_arrow (GtkStyle      *style,
 {
   g_return_if_fail (GTK_IS_STYLE (style));
   g_return_if_fail (GTK_STYLE_GET_CLASS (style)->draw_arrow != NULL);
-  
-  GTK_STYLE_GET_CLASS (style)->draw_arrow (style, window, state_type, shadow_type, NULL, NULL, NULL, arrow_type, fill, x, y, width, height);
+
+  g_warning ("%s has been deprecated and is no longer implemented.", __FUNCTION__);
 }
 
 /**
@@ -1118,8 +1118,8 @@ gtk_draw_diamond (GtkStyle      *style,
 {
   g_return_if_fail (GTK_IS_STYLE (style));
   g_return_if_fail (GTK_STYLE_GET_CLASS (style)->draw_diamond != NULL);
-  
-  GTK_STYLE_GET_CLASS (style)->draw_diamond (style, window, state_type, shadow_type, NULL, NULL, NULL, x, y, width, height);
+
+  g_warning ("%s has been deprecated and is no longer implemented.", __FUNCTION__);
 }
 
 /**
@@ -1145,8 +1145,8 @@ gtk_draw_string (GtkStyle      *style,
 {
   g_return_if_fail (GTK_IS_STYLE (style));
   g_return_if_fail (GTK_STYLE_GET_CLASS (style)->draw_string != NULL);
-  
-  GTK_STYLE_GET_CLASS (style)->draw_string (style, window, state_type, NULL, NULL, NULL, x, y, string);
+
+  g_warning ("%s has been deprecated and is no longer implemented.", __FUNCTION__);
 }
 
 /**
@@ -1176,8 +1176,8 @@ gtk_draw_box (GtkStyle      *style,
 {
   g_return_if_fail (GTK_IS_STYLE (style));
   g_return_if_fail (GTK_STYLE_GET_CLASS (style)->draw_box != NULL);
-  
-  GTK_STYLE_GET_CLASS (style)->draw_box (style, window, state_type, shadow_type, NULL, NULL, NULL, x, y, width, height);
+
+  g_warning ("%s has been deprecated and is no longer implemented.", __FUNCTION__);
 }
 
 /**
@@ -1207,8 +1207,8 @@ gtk_draw_flat_box (GtkStyle      *style,
 {
   g_return_if_fail (GTK_IS_STYLE (style));
   g_return_if_fail (GTK_STYLE_GET_CLASS (style)->draw_flat_box != NULL);
-  
-  GTK_STYLE_GET_CLASS (style)->draw_flat_box (style, window, state_type, shadow_type, NULL, NULL, NULL, x, y, width, height);
+
+  g_warning ("%s has been deprecated and is no longer implemented.", __FUNCTION__);
 }
 
 /**
@@ -1239,8 +1239,8 @@ gtk_draw_check (GtkStyle      *style,
 {
   g_return_if_fail (GTK_IS_STYLE (style));
   g_return_if_fail (GTK_STYLE_GET_CLASS (style)->draw_check != NULL);
-  
-  GTK_STYLE_GET_CLASS (style)->draw_check (style, window, state_type, shadow_type, NULL, NULL, NULL, x, y, width, height);
+
+  g_warning ("%s has been deprecated and is no longer implemented.", __FUNCTION__);
 }
 
 /**
@@ -1271,8 +1271,8 @@ gtk_draw_option (GtkStyle      *style,
 {
   g_return_if_fail (GTK_IS_STYLE (style));
   g_return_if_fail (GTK_STYLE_GET_CLASS (style)->draw_option != NULL);
-  
-  GTK_STYLE_GET_CLASS (style)->draw_option (style, window, state_type, shadow_type, NULL, NULL, NULL, x, y, width, height);
+
+  g_warning ("%s has been deprecated and is no longer implemented.", __FUNCTION__);
 }
 
 /**
@@ -1303,8 +1303,8 @@ gtk_draw_tab (GtkStyle      *style,
 {
   g_return_if_fail (GTK_IS_STYLE (style));
   g_return_if_fail (GTK_STYLE_GET_CLASS (style)->draw_tab != NULL);
-  
-  GTK_STYLE_GET_CLASS (style)->draw_tab (style, window, state_type, shadow_type, NULL, NULL, NULL, x, y, width, height);
+
+  g_warning ("%s has been deprecated and is no longer implemented.", __FUNCTION__);
 }
 
 /**
@@ -1342,8 +1342,8 @@ gtk_draw_shadow_gap (GtkStyle       *style,
 {
   g_return_if_fail (GTK_IS_STYLE (style));
   g_return_if_fail (GTK_STYLE_GET_CLASS (style)->draw_shadow_gap != NULL);
-  
-  GTK_STYLE_GET_CLASS (style)->draw_shadow_gap (style, window, state_type, shadow_type, NULL, NULL, NULL, x, y, width, height, gap_side, gap_x, gap_width);
+
+  g_warning ("%s has been deprecated and is no longer implemented.", __FUNCTION__);
 }
 
 /**
@@ -1380,8 +1380,8 @@ gtk_draw_box_gap (GtkStyle       *style,
 {
   g_return_if_fail (GTK_IS_STYLE (style));
   g_return_if_fail (GTK_STYLE_GET_CLASS (style)->draw_box_gap != NULL);
-  
-  GTK_STYLE_GET_CLASS (style)->draw_box_gap (style, window, state_type, shadow_type, NULL, NULL, NULL, x, y, width, height, gap_side, gap_x, gap_width);
+
+  g_warning ("%s has been deprecated and is no longer implemented.", __FUNCTION__);
 }
 
 /**
@@ -1413,8 +1413,8 @@ gtk_draw_extension (GtkStyle       *style,
 {
   g_return_if_fail (GTK_IS_STYLE (style));
   g_return_if_fail (GTK_STYLE_GET_CLASS (style)->draw_extension != NULL);
-  
-  GTK_STYLE_GET_CLASS (style)->draw_extension (style, window, state_type, shadow_type, NULL, NULL, NULL, x, y, width, height, gap_side);
+
+  g_warning ("%s has been deprecated and is no longer implemented.", __FUNCTION__);
 }
 
 /**
@@ -1441,8 +1441,8 @@ gtk_draw_focus (GtkStyle      *style,
 {
   g_return_if_fail (GTK_IS_STYLE (style));
   g_return_if_fail (GTK_STYLE_GET_CLASS (style)->draw_focus != NULL);
-  
-  GTK_STYLE_GET_CLASS (style)->draw_focus (style, window, GTK_STATE_NORMAL, NULL, NULL, NULL, x, y, width, height);
+
+  g_warning ("%s has been deprecated and is no longer implemented.", __FUNCTION__);
 }
 
 /**
@@ -1473,8 +1473,8 @@ gtk_draw_slider (GtkStyle      *style,
 {
   g_return_if_fail (GTK_IS_STYLE (style));
   g_return_if_fail (GTK_STYLE_GET_CLASS (style)->draw_slider != NULL);
-  
-  GTK_STYLE_GET_CLASS (style)->draw_slider (style, window, state_type, shadow_type, NULL, NULL, NULL, x, y, width, height, orientation);
+
+  g_warning ("%s has been deprecated and is no longer implemented.", __FUNCTION__);
 }
 
 /**
@@ -1506,8 +1506,8 @@ gtk_draw_handle (GtkStyle      *style,
 {
   g_return_if_fail (GTK_IS_STYLE (style));
   g_return_if_fail (GTK_STYLE_GET_CLASS (style)->draw_handle != NULL);
-  
-  GTK_STYLE_GET_CLASS (style)->draw_handle (style, window, state_type, shadow_type, NULL, NULL, NULL, x, y, width, height, orientation);
+
+  g_warning ("%s has been deprecated and is no longer implemented.", __FUNCTION__);
 }
 
 /**
@@ -1533,10 +1533,8 @@ gtk_draw_expander (GtkStyle        *style,
 {
   g_return_if_fail (GTK_IS_STYLE (style));
   g_return_if_fail (GTK_STYLE_GET_CLASS (style)->draw_expander != NULL);
-  
-  GTK_STYLE_GET_CLASS (style)->draw_expander (style, window, state_type,
-                                              NULL, NULL, NULL,
-                                              x, y, expander_style);
+
+  g_warning ("%s has been deprecated and is no longer implemented.", __FUNCTION__);
 }
 
 /**
@@ -1564,9 +1562,7 @@ gtk_draw_layout (GtkStyle        *style,
   g_return_if_fail (GTK_IS_STYLE (style));
   g_return_if_fail (GTK_STYLE_GET_CLASS (style)->draw_layout != NULL);
   
-  GTK_STYLE_GET_CLASS (style)->draw_layout (style, window, state_type, use_text,
-                                            NULL, NULL, NULL,
-                                            x, y, layout);
+  g_warning ("%s has been deprecated and is no longer implemented.", __FUNCTION__);
 }
 
 /**
@@ -1598,10 +1594,7 @@ gtk_draw_resize_grip (GtkStyle     *style,
   g_return_if_fail (GTK_IS_STYLE (style));
   g_return_if_fail (GTK_STYLE_GET_CLASS (style)->draw_resize_grip != NULL);
 
-  GTK_STYLE_GET_CLASS (style)->draw_resize_grip (style, window, state_type,
-                                                 NULL, NULL, NULL,
-                                                 edge,
-                                                 x, y, width, height);
+  g_warning ("%s has been deprecated and is no longer implemented.", __FUNCTION__);
 }
 
 
@@ -3417,11 +3410,12 @@ gtk_default_draw_diamond (GtkStyle      *style,
       gdk_gc_set_clip_rectangle (style->dark_gc[state_type], NULL);
       gdk_gc_set_clip_rectangle (style->black_gc, NULL);
     }
+#endif
 }
 
 static void
 gtk_default_draw_string (GtkStyle      *style,
-                         GdkWindow     *window,
+                         cairo_t       *cr,
                          GtkStateType   state_type,
                          GdkRectangle  *area,
                          GtkWidget     *widget,
@@ -3430,26 +3424,7 @@ gtk_default_draw_string (GtkStyle      *style,
                          gint           y,
                          const gchar   *string)
 {
-  if (area)
-    {
-      gdk_gc_set_clip_rectangle (style->white_gc, area);
-      gdk_gc_set_clip_rectangle (style->fg_gc[state_type], area);
-    }
-
-  if (state_type == GTK_STATE_INSENSITIVE)
-    gdk_draw_string (window,
-		     gtk_style_get_font_internal (style),
-		     style->white_gc, x + 1, y + 1, string);
-
-  gdk_draw_string (window,
-		   gtk_style_get_font_internal (style),
-		   style->fg_gc[state_type], x, y, string);
-
-  if (area)
-    {
-      gdk_gc_set_clip_rectangle (style->white_gc, NULL);
-      gdk_gc_set_clip_rectangle (style->fg_gc[state_type], NULL);
-    }
+  g_warning ("%s has been deprecated and is no longer implemented.", __FUNCTION__);
 }
 
 static void
@@ -5902,11 +5877,8 @@ gtk_paint_string (GtkStyle           *style,
 {
   g_return_if_fail (GTK_IS_STYLE (style));
   g_return_if_fail (GTK_STYLE_GET_CLASS (style)->draw_string != NULL);
-  g_return_if_fail (style->depth == gdk_drawable_get_depth (window));
 
-  GTK_STYLE_GET_CLASS (style)->draw_string (style, window, state_type,
-                                            (GdkRectangle *) area, widget, detail,
-                                            x, y, string);
+  g_warning ("%s has been deprecated and is no longer implemented.", __FUNCTION__);
 }
 
 /**
